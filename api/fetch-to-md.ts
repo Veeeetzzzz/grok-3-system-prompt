@@ -17,7 +17,7 @@ export default async function handler(req: Request) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "grok-3-latest",
+        model: "grok-3-beta",
         stream: false,
         temperature: 0,
         messages: [
