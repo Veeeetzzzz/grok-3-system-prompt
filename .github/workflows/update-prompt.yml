@@ -1,9 +1,9 @@
 name: Update Grok 3 System Prompt
 
 on:
-  workflow_dispatch:     # Manual trigger via GitHub UI
+  workflow_dispatch:
   schedule:
-    - cron: '0 */6 * * *' # Every 6 hours (optional, remove if not needed)
+    - cron: '0 */6 * * *'
 
 jobs:
   update-prompt:
@@ -29,6 +29,7 @@ jobs:
       - name: Create or update pull request
         uses: peter-evans/create-pull-request@v6
         with:
+          token: ${{ secrets.GH_PAT }}
           branch: prompt-update
           title: "Automated update of Grok 3 system prompt"
           body: "This PR contains the latest version of the Grok 3 system prompt retrieved via API."
