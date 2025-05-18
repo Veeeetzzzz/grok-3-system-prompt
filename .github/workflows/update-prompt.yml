@@ -3,7 +3,7 @@ name: Update Grok 3 System Prompt
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 */6 * * *'
+    - cron: '0 */6 * * *'  # Runs every 6 hours
 
 jobs:
   update-prompt:
@@ -20,6 +20,13 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Check for valid response
+        run: |
+          if grep -q "EDGE_FUNCTION_INVOCATION_FAILED" prompt.md; then
+            echo "❌ API failed — aborting commit."
+            exit 1
+          fi
 
       - name: Commit if changed
         run: |
