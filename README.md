@@ -16,14 +16,14 @@ This project automates the retrieval and tracking of Grok 3’s system prompt. I
 
 ## ⚙️ How It Works
 
-### 🧾 Edge Function (Vercel)
+### 🧾 [Edge Function](https://grok-3-system-prompt.vercel.app/api/fetch-to-md) (Vercel) 
 
 - Calls the Grok 3 API using a secure bearer token.
 - Sends a crafted prompt designed to extract the system instructions.
 - Converts the response to Markdown.
 - Returns it as plain text.
 
-### 🤖 GitHub Action
+### 🤖 [GitHub Action](https://github.com/Veeeetzzzz/grok-3-system-prompt/actions)
 
 - Runs every 6 hours or via manual trigger.
 - Calls the Edge Function endpoint.
