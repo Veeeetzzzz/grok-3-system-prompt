@@ -20,7 +20,7 @@ export default async function handler(req: Request) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "grok-3",
+        model: "grok-3-beta",
         stream: false,
         temperature: 0,
         // Only send the fixed user message and rely on the default system prompt
