@@ -1,4 +1,4 @@
-name: Update Grok 3 System Prompt
+name: Update Grok 3 System Prompt (API)
 
 on:
   workflow_dispatch:
@@ -14,23 +14,30 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Fetch latest prompt from Vercel Edge Function
-        run: curl -s https://grok-3-system-prompt.vercel.app/api/fetch-to-md -o prompt.md
+        run: curl -s https://grok-3-system-prompt.vercel.app/api/fetch-to-md -o api-prompt.md
 
       - name: Configure Git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
+      - name: Check for valid response
+        run: |
+          if grep -q "EDGE_FUNCTION_INVOCATION_FAILED" api-prompt.md; then
+            echo "❌ API failed — aborting commit."
+            exit 1
+          fi
+
       - name: Commit if changed
         run: |
-          git add prompt.md
-          git diff --cached --quiet || git commit -m "Update Grok 3 system prompt" && git push origin HEAD:prompt-update || echo "No changes to commit"
+          git add api-prompt.md
+          git diff --cached --quiet || git commit -m "Update Grok 3 API system prompt" && git push origin HEAD:prompt-update || echo "No changes to commit"
 
       - name: Create or update pull request
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GH_PAT }}
           branch: prompt-update
-          title: "Automated update of Grok 3 system prompt"
-          body: "This PR contains the latest version of the Grok 3 system prompt retrieved via API."
-          commit-message: "Update Grok 3 system prompt"
+          title: "Automated update of Grok 3 system prompt (API)"
+          body: "This PR contains the latest system prompt retrieved from the Grok 3 API."
+          commit-message: "Update Grok 3 API system prompt"
