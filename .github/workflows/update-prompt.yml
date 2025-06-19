@@ -3,7 +3,7 @@ name: Update Grok 3 System Prompt (API)
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 */12 * * *'
+    - cron: '0 */24 * * *'
 
 jobs:
   update-prompt:
