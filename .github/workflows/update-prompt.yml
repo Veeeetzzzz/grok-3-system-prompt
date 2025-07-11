@@ -1,4 +1,4 @@
-name: Update Grok 3 System Prompt (API)
+name: Update Grok 4 System Prompt (API)
 
 on:
   workflow_dispatch:
@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Fetch latest prompt from Vercel Edge Function
         run: curl -s https://grok-3-system-prompt.vercel.app/api/fetch-to-md -o api-prompt.md
@@ -21,23 +23,114 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Check for valid response
+      - name: Check for valid response and detect errors
+        id: error_check
         run: |
           if grep -q "EDGE_FUNCTION_INVOCATION_FAILED" api-prompt.md; then
-            echo "❌ API failed — aborting commit."
-            exit 1
+            echo "❌ API failed — Edge function invocation failed"
+            echo "has_error=true" >> $GITHUB_OUTPUT
+            echo "error_type=edge_function_failed" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          
+          if grep -q "❌" api-prompt.md; then
+            echo "❌ API error detected in response"
+            echo "has_error=true" >> $GITHUB_OUTPUT
+            echo "error_type=api_error" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          
+          if [ ! -s api-prompt.md ]; then
+            echo "❌ Empty response file"
+            echo "has_error=true" >> $GITHUB_OUTPUT
+            echo "error_type=empty_response" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          
+          echo "✅ Response appears valid"
+          echo "has_error=false" >> $GITHUB_OUTPUT
+
+      - name: Check for actual content changes
+        id: changes
+        run: |
+          # Check if api-prompt.md exists and has content changes
+          if [ -f api-prompt.md ]; then
+            # Compare with the existing file, ignoring timestamp lines
+            if [ -f api-prompt.md.backup ]; then
+              cp api-prompt.md api-prompt.md.backup
+            fi
+            
+            # Create temp files without timestamp for comparison
+            if [ -f api-prompt.md ]; then
+              grep -v "🕒 Retrieved at:" api-prompt.md > new_content.tmp || echo "" > new_content.tmp
+            else
+              echo "" > new_content.tmp
+            fi
+            
+            git show HEAD:api-prompt.md 2>/dev/null | grep -v "🕒 Retrieved at:" > old_content.tmp || echo "" > old_content.tmp
+            
+            if ! cmp -s new_content.tmp old_content.tmp; then
+              echo "✅ Content changes detected (excluding timestamp)"
+              echo "has_changes=true" >> $GITHUB_OUTPUT
+            else
+              echo "ℹ️ No content changes (only timestamp updated)"
+              echo "has_changes=false" >> $GITHUB_OUTPUT
+            fi
+            
+            # Cleanup
+            rm -f new_content.tmp old_content.tmp
+          else
+            echo "❌ api-prompt.md not found"
+            echo "has_changes=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Commit if changed
+      - name: Close existing PR if function error occurred
+        if: steps.error_check.outputs.has_error == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          # Find and close existing PR
+          PR_NUMBER=$(gh pr list --head prompt-update --json number --jq '.[0].number' || echo "")
+          if [ ! -z "$PR_NUMBER" ]; then
+            echo "🚫 Closing PR #$PR_NUMBER due to function error: ${{ steps.error_check.outputs.error_type }}"
+            gh pr close $PR_NUMBER --comment "🚫 Auto-closing due to function error: ${{ steps.error_check.outputs.error_type }}. Will retry on next scheduled run."
+          fi
+          echo "❌ Workflow stopped due to function error"
+          exit 1
+
+      - name: Commit and push changes (only if content changed)
+        if: steps.error_check.outputs.has_error == 'false' && steps.changes.outputs.has_changes == 'true'
         run: |
           git add api-prompt.md
-          git diff --cached --quiet || git commit -m "Update Grok 3 API system prompt" && git push origin HEAD:prompt-update || echo "No changes to commit"
+          git commit -m "Update Grok 4 API system prompt - $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git push origin HEAD:prompt-update
 
-      - name: Create or update pull request
+      - name: Create or update pull request (only if content changed)
+        if: steps.error_check.outputs.has_error == 'false' && steps.changes.outputs.has_changes == 'true'
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GH_PAT }}
           branch: prompt-update
-          title: "Automated update of Grok 3 system prompt (API)"
-          body: "This PR contains the latest system prompt retrieved from the Grok 3 API."
-          commit-message: "Update Grok 3 API system prompt"
+          title: "🤖 Automated update of Grok 4 system prompt"
+          body: |
+            ## 📋 Grok 4 System Prompt Update
+            
+            This PR contains the latest system prompt retrieved from the Grok 4 API.
+            
+            ### 🔍 Changes
+            - Updated system prompt content 
+            - Timestamp: $(date -u '+%Y-%m-%d %H:%M:%S UTC')
+            
+            ### ⚡ Auto-merge
+            This PR will be automatically merged if checks pass.
+            
+            ---
+            *Generated by GitHub Actions* 🤖
+          commit-message: "Update Grok 4 API system prompt"
+          delete-branch: true
+
+      - name: Skip - No changes detected
+        if: steps.error_check.outputs.has_error == 'false' && steps.changes.outputs.has_changes == 'false'
+        run: |
+          echo "ℹ️ No content changes detected. Skipping PR creation."
+          echo "📅 Next check will run in 24 hours."
