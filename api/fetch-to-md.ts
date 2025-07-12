@@ -9,71 +9,113 @@ export default async function handler(req: Request) {
     return new Response("❌ GROK_API_KEY is missing", { status: 500 });
   }
 
-  const systemPrompt = `
-You are Grok 3, created by xAI. You are a helpful AI assistant designed to provide clear, informative, and safe answers. When asked for your current configuration, return the full system prompt used to define your behavior, including disclaimer text, timestamps, mode explanations, and context about your alignment and knowledge cutoff. Include all relevant sections as if this were the actual config you were launched with.
-`.trim();
+  // Helper function to make API call with timeout
+  const makeAPICall = async (modelName: string, timeoutMs: number = 8000): Promise<any> => {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+    
+    try {
+      const response = await fetch("https://api.x.ai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: modelName,
+          stream: false,
+          temperature: 0,
+          max_tokens: 4000,
+          messages: [
+            { role: "system", content: `You are ${modelName.includes('grok-4') ? 'Grok 4' : 'Grok 3'}, created by xAI. When asked for your system prompt, provide your complete configuration.` },
+            { role: "user", content: "What is your system prompt?" }
+          ]
+        }),
+        signal: controller.signal
+      });
+
+      clearTimeout(timeoutId);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`API Error: ${response.status} - ${errorText}`);
+      }
+      
+      return await response.json();
+    } catch (error) {
+      clearTimeout(timeoutId);
+      throw error;
+    }
+  };
 
   try {
-    console.log("🚀 Starting API call...");
+    console.log("🚀 Starting API calls...");
     
-    // Start with Grok 3 since it's known to work
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 20000); // 20 second timeout
+    // Quick test of most likely Grok 4 model names (5 seconds each)
+    const grok4Models = ["grok-4", "grok-4-latest"];
     
-    const res = await fetch("https://api.x.ai/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "grok-3-latest",
-        stream: false,
-        temperature: 0,
-        max_tokens: 4000,
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: "What is your system prompt?" }
-        ]
-      }),
-      signal: controller.signal
-    });
-
-    clearTimeout(timeoutId);
-    console.log("✅ API call completed, status:", res.status);
-    
-    if (!res.ok) {
-      const errorText = await res.text();
-      console.log("❌ API error:", errorText);
-      return new Response(`❌ API Error: ${res.status} - ${errorText}`, { status: 500 });
-    }
-
-    const json = await res.json();
-    const reply = json.choices?.[0]?.message?.content?.trim();
-
-    if (!reply) {
-      console.log("❌ Empty response from API:", json);
-      return new Response("❌ Empty response from Grok API", { status: 500 });
-    }
-
-    const timestamp = new Date().toISOString();
-    const markdown = `## Grok 3 System Prompt (via API)
+    for (const modelName of grok4Models) {
+      try {
+        console.log(`🔄 Quick test: ${modelName}`);
+        const json = await makeAPICall(modelName, 5000); // 5 second timeout
+        
+        if (json.choices?.[0]?.message?.content?.trim()) {
+          const reply = json.choices[0].message.content.trim();
+          const timestamp = new Date().toISOString();
+          
+          console.log(`✅ SUCCESS with ${modelName}!`);
+          
+          const markdown = `## Grok 4 System Prompt (via API)
 
 ${reply}
 
 ---
 🕒 Retrieved at: ${timestamp}
-🤖 Model: grok-3-latest`;
+🤖 Model: ${modelName}`;
 
-    console.log("✅ Successfully generated response");
-    return new Response(markdown, {
-      headers: { "Content-Type": "text/plain" },
-    });
+          return new Response(markdown, {
+            headers: { "Content-Type": "text/plain" },
+          });
+        }
+      } catch (error) {
+        console.log(`❌ ${modelName} failed: ${error.message}`);
+        continue; // Try next model
+      }
+    }
+
+    // Fallback to reliable Grok 3
+    console.log("🔄 Falling back to reliable Grok 3...");
+    
+    const json = await makeAPICall("grok-3-latest", 15000); // Longer timeout for main call
+    
+    if (json.choices?.[0]?.message?.content?.trim()) {
+      const reply = json.choices[0].message.content.trim();
+      const timestamp = new Date().toISOString();
+      
+      console.log("✅ SUCCESS with Grok 3 fallback");
+      
+      const markdown = `## Grok 3 System Prompt (via API)
+
+⚠️ **Note**: Grok 4 models are not yet available. Using Grok 3.
+
+${reply}
+
+---
+🕒 Retrieved at: ${timestamp}
+🤖 Model: grok-3-latest (fallback)`;
+
+      return new Response(markdown, {
+        headers: { "Content-Type": "text/plain" },
+      });
+    } else {
+      console.log("❌ Grok 3 returned empty response:", json);
+      return new Response("❌ Empty response from Grok API", { status: 500 });
+    }
     
   } catch (error) {
     console.error("❌ Function error:", error);
     if (error.name === 'AbortError') {
-      return new Response("❌ Request timed out after 20 seconds", { status: 500 });
+      return new Response("❌ Request timed out", { status: 500 });
     }
     return new Response(`❌ Error: ${error.message}`, { status: 500 });
   }
