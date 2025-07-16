@@ -16,7 +16,7 @@ jobs:
           fetch-depth: 0
 
       - name: Fetch latest prompt from Vercel Edge Function
-        run: curl -s https://grok-4-system-prompt.vercel.app/api/fetch-to-md -o api-prompt.md
+        run: curl -s https://grok-3-system-prompt.vercel.app/api/fetch-to-md -o api-prompt.md
 
       - name: Configure Git
         run: |

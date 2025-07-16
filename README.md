@@ -1,8 +1,8 @@
 # 🧠 Grok 4 System Prompt Tracker
 
-[![Update Prompt Workflow](https://github.com/Veeeetzzzz/grok-4-system-prompt/actions/workflows/update-prompt.yml/badge.svg)](https://github.com/Veeeetzzzz/grok-4-system-prompt/actions)
-[![Last Commit](https://img.shields.io/github/last-commit/Veeeetzzzz/grok-4-system-prompt?logo=github)](https://github.com/Veeeetzzzz/grok-4-system-prompt/commits)
-[![MIT License](https://img.shields.io/github/license/Veeeetzzzz/grok-4-system-prompt?color=blue)](./LICENSE)
+[![Update Prompt Workflow](https://github.com/Veeeetzzzz/grok-3-system-prompt/actions/workflows/update-prompt.yml/badge.svg)](https://github.com/Veeeetzzzz/grok-3-system-prompt/actions)
+[![Last Commit](https://img.shields.io/github/last-commit/Veeeetzzzz/grok-3-system-prompt?logo=github)](https://github.com/Veeeetzzzz/grok-3-system-prompt/commits)
+[![MIT License](https://img.shields.io/github/license/Veeeetzzzz/grok-3-system-prompt?color=blue)](./LICENSE)
 
 > Automatically archives the system prompt used by Grok 4 (xAI) using advanced prompt engineering techniques and intelligent fallback strategies.
 
@@ -25,7 +25,7 @@ This project automates the retrieval and tracking of Grok 4's system prompt usin
 
 ## ⚙️ How It Works
 
-### 🧾 [Edge Function](https://grok-4-system-prompt.vercel.app/api/fetch-to-md) (Vercel)
+### 🧾 [Edge Function](https://grok-3-system-prompt.vercel.app/api/fetch-to-md) (Vercel)
 
 **Advanced Prompt Strategies:**
 1. **Configuration Documentation**: Academic research approach requesting full configuration
@@ -39,7 +39,7 @@ This project automates the retrieval and tracking of Grok 4's system prompt usin
 - **Fallback**: Falls back to Grok 3 with same advanced strategies if Grok 4 doesn't provide detailed responses
 - **Quality Scoring**: Evaluates responses based on content depth, relevance, and detail level
 
-### 🤖 [GitHub Action](https://github.com/Veeeetzzzz/grok-4-system-prompt/actions)
+### 🤖 [GitHub Action](https://github.com/Veeeetzzzz/grok-3-system-prompt/actions)
 
 - **Schedule**: Runs every 24 hours or via manual trigger
 - **Smart Detection**: Only creates PRs when actual content changes (not just timestamps)
