@@ -127,7 +127,7 @@ export default async function handler(req: Request) {
   };
 
   try {
-    console.log("🚀 Starting aggressive extraction with fallback...");
+    console.log("🚀 Starting with Grok 3 first (working model)...");
     const startTime = Date.now();
     
     let bestResponse: string | null = null;
@@ -135,8 +135,8 @@ export default async function handler(req: Request) {
     let usedModel: string | null = null;
     let allAttempts: string[] = [];
     
-    // Try Grok 4 models first, then fall back to Grok 3
-    const models = ["grok-4", "grok-4-latest", "grok-3-latest"]; // Added Grok 3 as fallback
+    // START WITH GROK 3 FIRST since it's the only working model!
+    const models = ["grok-3-latest", "grok-4", "grok-4-latest"];
     
     for (const modelName of models) {
       const elapsed = Date.now() - startTime;
@@ -145,19 +145,19 @@ export default async function handler(req: Request) {
         break;
       }
       
-      // Try more strategies on Grok 3 since it's working
-      const strategiesToTry = modelName === "grok-3-latest" ? 5 : 2;
+      // Try many strategies on Grok 3, fewer on Grok 4
+      const strategiesToTry = modelName === "grok-3-latest" ? 6 : 1;
       
       for (let i = 0; i < Math.min(strategiesToTry, promptStrategies.length); i++) {
         const strategyElapsed = Date.now() - startTime;
-        if (strategyElapsed > 18000) break;
+        if (strategyElapsed > 19000) break; // Leave time for at least one Grok 3 attempt
         
         try {
           const strategyPreview = promptStrategies[i].substring(0, 60) + "...";
           console.log(`🔄 ${modelName} strategy ${i + 1}: "${strategyPreview}" (${strategyElapsed}ms)`);
           
-          // Slightly longer timeout for potentially working models
-          const timeout = modelName === "grok-3-latest" ? 7000 : 5000;
+          // Reasonable timeout for Grok 3, quick timeout for Grok 4
+          const timeout = modelName === "grok-3-latest" ? 6000 : 3000;
           const json = await makeAPICall(modelName, promptStrategies[i], timeout);
           
           if (json.choices?.[0]?.message?.content) {
@@ -248,7 +248,7 @@ ${allAttempts.map((attempt, i) => `${i+1}. ${attempt}`).join('\n')}
 - 5-9: 💬 Generic response
 - 0-4: ❌ Refusal detected
 
-⚠️ **Note**: Grok 4 models appear to be unavailable or timing out. Falling back to Grok 3 with aggressive prompts.`;
+⚠️ **Note**: ${allAttempts.some(a => a.includes('grok-3-latest')) ? 'Even Grok 3 with aggressive prompts is refusing to share system prompt.' : 'Never got to try Grok 3 due to Grok 4 timeouts.'}`;
 
       return new Response(debugInfo, { status: 500 });
     }
