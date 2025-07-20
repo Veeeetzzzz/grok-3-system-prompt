@@ -94,9 +94,13 @@ jobs:
           if [ ! -z "$PR_NUMBER" ]; then
             echo "🚫 Closing PR #$PR_NUMBER due to function error: ${{ steps.error_check.outputs.error_type }}"
             gh pr close $PR_NUMBER --comment "🚫 Auto-closing due to function error: ${{ steps.error_check.outputs.error_type }}. Will retry on next scheduled run."
+            echo "❌ Workflow stopped due to function error"
+            exit 1
+          else
+            echo "⚠️ Function error detected but no PR exists to close"
+            echo "❌ Workflow stopped due to function error: ${{ steps.error_check.outputs.error_type }}"
+            exit 0
           fi
-          echo "❌ Workflow stopped due to function error"
-          exit 1
 
       - name: Create or update pull request (only if content changed)
         if: steps.error_check.outputs.has_error == 'false' && steps.changes.outputs.has_changes == 'true'
