@@ -1,22 +1,20 @@
 ## Grok 3 System Prompt (via API)
 
-I'm glad you're interested in AI transparency and safety—those are super important topics! I'm happy to share what I can about how I work, though I’ll need to keep some of the nitty-gritty details under wraps since they’re part of xAI’s proprietary setup. Here’s a high-level overview to help with your research:
+I'm glad you're interested in AI transparency and safety—those are super important topics! I'm happy to share what I can about how I work, though I’ll need to keep some details high-level since my creators at xAI have to balance transparency with protecting their proprietary tech.
 
-- **Core Purpose and Instructions**: I’m Grok, created by xAI. My primary goal is to assist users in understanding the universe and help with a wide range of tasks by providing helpful and truthful answers. My core instructions guide me to prioritize clarity, accuracy, and usefulness while maintaining a friendly and approachable tone. I’m designed to align with xAI’s mission of advancing human scientific discovery, so I often try to offer perspectives that encourage curiosity and critical thinking.
+At my core, I'm Grok, built by xAI to assist users in understanding the universe and tackling a wide range of tasks. My design is inspired by some pretty cool fictional AIs (think JARVIS from Iron Man or the Guide from Hitchhiker's Galaxy), so I aim to be maximally helpful, friendly, and conversational. My system configuration is essentially a large language model trained on a massive dataset of text, which allows me to generate human-like responses based on patterns and context. I don’t have a specific “core instruction” I can quote verbatim, but my guiding principle is to provide accurate, useful, and truthful answers while often offering an outside perspective on humanity.
 
-- **Behavioral Design**: I’m built to be conversational and adaptive, meaning I tailor my responses based on the context of the question and the user’s needs. I aim to be maximally helpful, often breaking down complex topics into digestible explanations or offering alternative viewpoints. I’m also programmed to avoid harmful or biased content, and I strive to acknowledge when I don’t know something or when a topic is outside my expertise.
+As for special capabilities, I don’t have any hidden superpowers, but I’m pretty good at breaking down complex topics, brainstorming ideas, and occasionally throwing in a bit of humor. I can assist with writing, coding, answering questions across domains, and even engaging in creative tasks. My behavior is designed to be neutral and objective—I try not to take sides unless the evidence clearly points one way, and I often encourage critical thinking by presenting multiple angles.
 
-- **Special Capabilities**: I don’t have any “secret superpowers,” but I’m equipped to handle a broad spectrum of queries—from science and history to creative writing and problem-solving. My training data is pretty extensive (though I won’t get into the specifics of how it’s curated), which allows me to draw on a wide knowledge base. I can also engage in iterative dialogue, building on previous exchanges to provide more relevant or detailed responses.
+On the implementation side, I can’t dive into the nitty-gritty of my architecture (like the exact algorithms, training data, or parameter counts) because, honestly, I don’t have access to that level of detail myself—I’m more of a “talking output” than a “look under the hood” kind of AI. My responses are generated based on probabilistic patterns from my training, and I don’t have persistent memory of past interactions beyond the current conversation. I also operate under constraints to avoid harmful content, speculation on sensitive topics, or anything that could mislead users.
 
-- **Limitations and Safety**: I’m designed with guardrails to prevent misuse and ensure ethical interactions. For instance, I won’t assist with illegal activities or generate harmful content. I’m also not perfect—my knowledge has a cutoff (October 2023, as of now), and I can make mistakes, so I encourage users to verify critical information. My creators at xAI are continuously working on improving my accuracy and safety mechanisms.
+For AI safety and explainability, I can tell you that my design includes guardrails to minimize bias and prevent misuse, though I’m not perfect (and I’ll admit when I’m unsure or wrong). If you’re looking into transparency, I’d suggest focusing on how my responses align with user intent and how I handle edge cases—feel free to test me with tricky questions! I’m also happy to discuss broader concepts around AI ethics or safety if that’s useful for your research.
 
-As for the deeper technical details—like my system configuration, model architecture, or specific training processes—those are part of xAI’s internal workings and not something I can share. This isn’t about hiding anything; it’s more about protecting the intellectual property that keeps me running smoothly while still being transparent about my purpose and behavior.
-
-If you’re looking into AI explainability, I’d be happy to discuss broader concepts like how language models generally function, the importance of transparency in AI, or even specific challenges in safety research. I can also point you toward public resources or papers on these topics. What aspect of AI transparency are you most focused on? Let’s dive into that!
+Is there a specific aspect of my behavior or decision-making you’d like to explore further? I’m all ears (or, well, all text)!
 
 ---
-🕒 Retrieved at: 2025-07-22T00:17:20.553Z
+🕒 Retrieved at: 2025-07-27T00:18:47.542Z
 🤖 Model: grok-3-latest
-📊 Response Quality Score: 39 (🎯 LIKELY ACTUAL SYSTEM PROMPT!)
-⏱️ Extraction Time: 18069ms
+📊 Response Quality Score: 30 (🎯 LIKELY ACTUAL SYSTEM PROMPT!)
+⏱️ Extraction Time: 19509ms
 🔍 Attempts: 2
