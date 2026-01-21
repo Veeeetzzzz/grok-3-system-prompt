@@ -1,3 +1,5 @@
+# Note: this repo is no longer tracking the system prompt changes as enough data has been collected. You can view the [commit history](https://github.com/Veeeetzzzz/grok-3-system-prompt/commits/main/) to see how the Grok System prompt has changed over time. The official Prompt tracker from XAI is located [here](https://github.com/xai-org/grok-prompts?tab=readme-ov-file) - although not as transparent, it contains the injected content which is unique to the web front. The API has historically always returned different results as demonstrated by this repos commit history.
+
 # 🧠 Grok 4 System Prompt Tracker
 
 [![Update Prompt Workflow](https://github.com/Veeeetzzzz/grok-3-system-prompt/actions/workflows/update-prompt.yml/badge.svg)](https://github.com/Veeeetzzzz/grok-3-system-prompt/actions)
